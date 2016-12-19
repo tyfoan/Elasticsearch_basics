@@ -1,0 +1,37 @@
+[
+  {
+    "author": "kimchy",
+    "text": "Elasticsearch: cool. bonsai cool.",
+    "timestamp": ""
+  },
+  {
+    "author": "kimchy1",
+    "text": "Elasticsearch: cool. bonsai cool.1",
+    "timestamp": ""
+  },
+  {
+    "author": "Author",
+    "text": "Elasticsearch: Ok. bonsai cool.2",
+    "timestamp": ""
+  },
+  {
+    "author": "kimchy3",
+    "text": "Elasticsearch: cool. bonsai cool.3",
+    "timestamp": ""
+  },
+  {
+    "author": "kimchy4",
+    "text": "Elasticsearch: cool. bonsai cool4.",
+    "timestamp": ""
+  },
+  {
+    "author": "kimchy5",
+    "text": "Elasticsearch: cool. bonsai cool5.",
+    "timestamp": ""
+  },
+  {
+    "author": "kimchy6",
+    "text": "Elasticsearch: cool. bonsai cool.6",
+    "timestamp": ""
+  }
+]

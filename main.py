@@ -55,8 +55,13 @@ class ElasticSearchRepository:
         tweets = []
         for response_item in response['hits']['hits']:
             source = response_item['_source']
-            values = response_item['highlight'].values()
-            tweets.append(Tweet(response_item['_id'], source['author'], values, source['timestamp']))
+            highlights = response_item['highlight']
+            tweet_tmp = Tweet(response_item['_id'], source['author'], source['text'], source['timestamp'])
+            setattr(tweet_tmp, str(highlights.keys()[0]), str(highlights.values()[0]))
+            tweets.append(tweet_tmp)
+
+
+        pp(response, indent=4)
 
         return tweets
 
@@ -76,13 +81,13 @@ if __name__ == "__main__":
     json_files = file_manager.load_objects_from_json_file("./indexes.json")
     [elastic_search_repository.create(json) for json in json_files]
 
-    tweets_found = elastic_search_repository.search('Ok.', ['text'])
+    tweets_found = elastic_search_repository.search('Ok.', ['author'])
     for tweet in tweets_found:
         pp(tweet.__dict__, indent=4)
 
-    print '-' * 20
+    print('-'*20)
 
     # json.dumps(dict)
-    all_data = elastic_search_repository.get_all()
-    for item in all_data:
+    all_index_data = elastic_search_repository.get_all()
+    for item in all_index_data:
         pp(item.__dict__, indent=4)

@@ -57,10 +57,8 @@ class ElasticSearchRepository:
         tweets = []
         for response_item in response['hits']['hits']:
             source = response_item['_source']
-            tweets.append(Tweet(response_item['_id'], source['author'], source['text'], source['timestamp']))
-
-#        for i in tweets:
-#            self._elastic_search.index
+            values = response_item['highlight'].values()
+            tweets.append(Tweet(response_item['_id'], source['author'], values, source['timestamp']))
 
         return tweets
 

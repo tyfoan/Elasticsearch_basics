@@ -10,7 +10,7 @@ class MainHandler(RequestHandler):
                    '<input type="text" name="message">'
                    '<input type="submit" value="Submit">'
                    '</form></body></html>')
-        self.write(json_encode(main.initial_data))
+#        self.write(json_encode(main.initial_data))
 
     def post(self):
         self.set_header("Content-Type", "text/plain")

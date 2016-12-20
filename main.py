@@ -3,8 +3,6 @@ import json
 from pprint import pprint as pp
 
 
-# 1. write this code from scratch
-# 2. convert sources to object AND write to result object
 class Tweet:
     def __init__(self, id_author, author, text, timestamp):
         self.id = id_author
@@ -35,14 +33,16 @@ class ElasticSearchRepository:
         self._elastic_search.index(index=self._index, doc_type=self._doc_type, body=body, pretty=True)
 
     def search(self, query_string, fields=['content']):
-        dict_fields = {}
+        dict_fields = []
         for i in fields:
-            dict_fields[i] = {}
+            dict_fields.append({i: {}})
+        dict_fields = {'fields': dict_fields}
         query = {
             "query": {
                 "query_string": {
                     "default_field": ','.join(fields),
-                    "query": query_string
+                    "query": query_string,
+                    "fields": fields
                 }
             },
             "highlight": {
@@ -59,7 +59,6 @@ class ElasticSearchRepository:
             tweet_tmp = Tweet(response_item['_id'], source['author'], source['text'], source['timestamp'])
             setattr(tweet_tmp, str(highlights.keys()[0]), str(highlights.values()[0][0]))
             tweets.append(tweet_tmp)
-
 
         pp(response, indent=4)
 
@@ -81,11 +80,11 @@ if __name__ == "__main__":
     json_files = file_manager.load_objects_from_json_file("./indexes.json")
     [elastic_search_repository.create(json) for json in json_files]
 
-    tweets_found = elastic_search_repository.search('Ok.', ['author'])
+    tweets_found = elastic_search_repository.search('Ok.', ['author', 'text'])
     for tweet in tweets_found:
         pp(tweet.__dict__, indent=4)
 
-    print('-'*20)
+    print('-' * 20)
 
     # json.dumps(dict)
     all_index_data = elastic_search_repository.get_all()

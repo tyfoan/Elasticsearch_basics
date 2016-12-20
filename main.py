@@ -13,7 +13,6 @@ class Tweet:
         self.timestamp = timestamp
 
 
-
 class ElasticSearchRepository:
     def __init__(self, elastic_search, index, doc_type):
         self._index = index
@@ -21,7 +20,7 @@ class ElasticSearchRepository:
         self._elastic_search = elastic_search
 
     def get_all(self):
-      # source = self._elastic_search.get(index=self._index)
+        # source = self._elastic_search.get(index=self._index)
         tweets_response = self._elastic_search.search(index=self._index)
         tweets = []
         for tweet in tweets_response['hits']['hits']:
@@ -50,9 +49,8 @@ class ElasticSearchRepository:
                 "fields": dict_fields
             }
         }
-        #print query
+
         response = self._elastic_search.search(self._index, body=query)
-        #pp(response)
 
         tweets = []
         for response_item in response['hits']['hits']:
@@ -80,15 +78,11 @@ if __name__ == "__main__":
 
     tweets_found = elastic_search_repository.search('Ok.', ['text'])
     for tweet in tweets_found:
-        print tweet.id
-        print tweet.author
-        print tweet.text
+        pp(tweet.__dict__, indent=4)
 
-    print '-'*20
+    print '-' * 20
 
-    all_tweets = elastic_search_repository.get_all()
-    for tweet in all_tweets:
-        print tweet.id
-        print tweet.author
-        print tweet.text
-        print '*'*5
+    # json.dumps(dict)
+    all_data = elastic_search_repository.get_all()
+    for item in all_data:
+        pp(item.__dict__, indent=4)

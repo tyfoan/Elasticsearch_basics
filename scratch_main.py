@@ -33,6 +33,7 @@ class Elastic_search_repository:
         }
 
         result = self._elastic_search.search(self._index, body=query_body)
+        pp(result)
         return result
 
 
@@ -52,4 +53,4 @@ if __name__ == '__main__':
     file_manager = FileManager()
     [elastic_search.create(json) for json in file_manager.open_file('./indexes.json')]
     # searching
-    elastic_search.search('kimchy', ['author'])
+    elastic_search.search('cool.', ['author'])

@@ -1,13 +1,17 @@
 from elasticsearch import Elasticsearch
 import json
 from pprint import pprint as pp
-from collections import namedtuple
+
 
 class Tweet:
-    # def __init__(self, id_author, author, text, timestamp):
-    def __init__(self, **kwargs):
+    def __init__(self, author_id, author, text, timestamp, **kwargs):
+        self.id = author_id
+        self.author = author
+        self.text = text
+        self.timestamp = timestamp
         for key, value in kwargs.items():
             setattr(self, key, value)
+
 
 class ElasticSearchRepository:
     def __init__(self, elastic_search, index, doc_type):
@@ -21,7 +25,7 @@ class ElasticSearchRepository:
         tweets = []
         for tweet in tweets_response['hits']['hits']:
             source = tweet['_source']
-            tweets.append(Tweet(**source))
+            tweets.append(Tweet(tweet['_id'], **source))
         return tweets
 
     def delete_all(self):
@@ -54,7 +58,7 @@ class ElasticSearchRepository:
         for response_item in response['hits']['hits']:
             source = response_item['_source']
             highlights = response_item['highlight']
-            tweet = Tweet(**source)
+            tweet = Tweet(response_item['_id'], **source)
             [setattr(tweet, key, str(value[0])) for key, value in highlights.items()]
             tweets.append(tweet)
 

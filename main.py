@@ -33,20 +33,27 @@ class ElasticSearchRepository:
         self._elastic_search.index(index=self._index, doc_type=self._doc_type, body=body, pretty=True)
 
     def search(self, query_string, fields=['content']):
-        dict_fields = []
+        list_dict_fields = []
         for i in fields:
-            dict_fields.append({i: {}})
-        dict_fields = {'fields': dict_fields}
+            list_dict_fields.append({i: {}})
+        #        dict_fields = {'fields': dict_fields}
         query = {
             "query": {
-                "query_string": {
-                    "default_field": ','.join(fields),
+                "multi_match": {
                     "query": query_string,
-                    "fields": fields
+                    # "type": "cross_fields",
+                    "fields": fields,
+                    "operator": "and"
                 }
+                # "query_string": {
+                #     #"default_field": ','.join(fields),
+                #     "query": query_string,
+                #     "fields": fields,
+                # }
             },
             "highlight": {
-                "fields": dict_fields
+                "fields": list_dict_fields,
+                "require_field_match": 'false'
             }
         }
 
@@ -57,7 +64,8 @@ class ElasticSearchRepository:
             source = response_item['_source']
             highlights = response_item['highlight']
             tweet_tmp = Tweet(response_item['_id'], source['author'], source['text'], source['timestamp'])
-            setattr(tweet_tmp, str(highlights.keys()[0]), str(highlights.values()[0][0]))
+            # setattr(tweet_tmp, str(highlights.keys()[0]), str(highlights.values()[0][0]))
+            [setattr(tweet_tmp, key, value) for key, value in highlights.items()]
             tweets.append(tweet_tmp)
 
         pp(response, indent=4)

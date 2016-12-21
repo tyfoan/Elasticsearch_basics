@@ -14,7 +14,6 @@ class TweetElasticSearchRepository(BaseElasticSearchRepository):
         tweets = []
         for result_item in search_result_items:
             tweet = Tweet()
-            #setattr(tweets, str(key), value) for key, value in result_item.items()
             for key, value in result_item.items():
                 setattr(tweet, str(key), value)
             tweets.append(tweet)

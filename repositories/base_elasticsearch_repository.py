@@ -1,15 +1,23 @@
 class BaseElasticSearchRepository(object):
-    def __init__(self, elastic_search, index, doc_type):
+    def __init__(self, elastic_search, index, doc_type, model_factory=None):
+        """
+        :type elastic_search: elasticsearch.client.Elasticsearch
+        :type index: string
+        :type doc_type: string
+        :type model_factory: factories.base_model_factory.BaseModelFactory
+        :return:
+        """
         self._elastic_search = elastic_search
         self._index = index
         self._doc_type = doc_type
+        self._model_factory = model_factory
 
     def get_model(self):
         """
         Instantiate model object to be filled in
         :rtype: model.base_model.BaseModel
         """
-        raise Exception("Implement this method")
+        return self._model_factory.get_model()
 
     def get_all_query(self):
         return self._elastic_search.search(index=self._index)

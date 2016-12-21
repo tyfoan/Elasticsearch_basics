@@ -1,7 +1,8 @@
 import unittest
+from factories.tweet_model_factory import TweetModelFactory
 from mockito import mock, when, any
 from model.tweet import Tweet
-from repositories.tweet_elasticsearch_repository import TweetElasticSearchRepository
+from repositories.base_elasticsearch_repository import BaseElasticSearchRepository
 
 __author__ = 'Konstantin Gritsenko <gritsenko.konstantin@gmail.com>'
 
@@ -14,7 +15,12 @@ class TestTweetElasticSearchRespository(unittest.TestCase):
         when(self._elastic_search)\
             .search(any(), body=any())\
             .thenReturn(self._prepare_search_reponse())
-        self._repository = TweetElasticSearchRepository(self._elastic_search, "some_test_index", "some_test_doc_type")
+        self._repository = BaseElasticSearchRepository(
+            self._elastic_search,
+            "some_test_index",
+            "some_test_doc_type",
+            TweetModelFactory()
+        )
         pass
 
     def test_search_with_highlight(self):

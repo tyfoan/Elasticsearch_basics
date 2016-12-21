@@ -1,7 +1,8 @@
 import unittest
+from factories.comment_model_factory import CommentModelFactory
 from mockito import mock, when, any
 from model.comment import Comment
-from repositories.comment_elasticsearch_repository import CommentElasticSearchRepository
+from repositories.base_elasticsearch_repository import BaseElasticSearchRepository
 
 __author__ = 'Konstantin Gritsenko <gritsenko.konstantin@gmail.com>'
 
@@ -14,7 +15,12 @@ class TestCommentElasticSearchRespository(unittest.TestCase):
         when(self._elastic_search)\
             .search(any(), body=any())\
             .thenReturn(self._prepare_search_reponse())
-        self._repository = CommentElasticSearchRepository(self._elastic_search, "some_test_index", "some_test_doc_type")
+        self._repository = BaseElasticSearchRepository(
+            self._elastic_search,
+            "some_test_index",
+            "some_test_doc_type",
+            CommentModelFactory()
+        )
         pass
 
     def test_search_with_highlight(self):

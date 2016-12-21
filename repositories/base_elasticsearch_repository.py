@@ -5,7 +5,6 @@ class BaseElasticSearchRepository(object):
         :type index: string
         :type doc_type: string
         :type model_factory: factories.base_model_factory.BaseModelFactory
-        :return:
         """
         self._elastic_search = elastic_search
         self._index = index

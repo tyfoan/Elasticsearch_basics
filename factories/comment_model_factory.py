@@ -9,4 +9,7 @@ class CommentModelFactory(BaseModelFactory):
         BaseModelFactory.__init__(self)
 
     def get_model(self):
+        """
+        :rtype: model.comment.Comment
+        """
         return Comment()

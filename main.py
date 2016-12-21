@@ -26,4 +26,4 @@ if __name__ == "__main__":
 
     print('-' * 20)
 
-    #comment_elastic_search_repository = CommentElasticSearchRepository(Elasticsearch, 'answers', 'comments')
+    type(tweet_elastic_search_repository.get_all_query())

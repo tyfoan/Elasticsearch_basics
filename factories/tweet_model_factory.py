@@ -9,4 +9,7 @@ class TweetModelFactory(BaseModelFactory):
         BaseModelFactory.__init__(self)
 
     def get_model(self):
+        """
+        :rtype: model.tweet.Tweet
+        """
         return Tweet()

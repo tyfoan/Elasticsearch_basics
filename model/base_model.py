@@ -3,6 +3,9 @@ __author__ = 'Konstantin Gritsenko <gritsenko.konstantin@gmail.com>'
 
 class BaseModel:
     def __init__(self, object_id=None):
+        """
+        :type object_id: string
+        """
         self.id = object_id
 
     def init_from_search_result(self, search_result_item):

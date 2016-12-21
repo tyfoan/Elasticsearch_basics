@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/gritsenko-konstantin/Elasticsearch_basics.svg?branch=feature%2Funit_tests)](https://travis-ci.org/gritsenko-konstantin/Elasticsearch_basics)

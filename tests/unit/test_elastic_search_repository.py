@@ -1,5 +1,5 @@
 import unittest
-from main import ElasticSearchRepository, Tweet
+from main import TweetElasticSearchRepository, Tweet
 from mockito import mock, when, any
 
 __author__ = 'Konstantin Gritsenko <gritsenko.konstantin@gmail.com>'
@@ -13,7 +13,7 @@ class TestElasticSearchRespository(unittest.TestCase):
         when(self._elastic_search)\
             .search(any(), body=any())\
             .thenReturn(self._prepare_search_reponse())
-        self._repository = ElasticSearchRepository(self._elastic_search, "some_test_index", "some_test_doc_type")
+        self._repository = TweetElasticSearchRepository(self._elastic_search, "some_test_index", "some_test_doc_type")
         pass
 
     def test_search_with_highlight(self):

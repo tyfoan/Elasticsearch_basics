@@ -65,7 +65,7 @@ class ElasticSearchRepository:
             highlights = response_item['highlight']
             tweet_tmp = Tweet(response_item['_id'], source['author'], source['text'], source['timestamp'])
             # setattr(tweet_tmp, str(highlights.keys()[0]), str(highlights.values()[0][0]))
-            [setattr(tweet_tmp, key, value) for key, value in highlights.items()]
+            [setattr(tweet_tmp, key, str(value[0])) for key, value in highlights.items()]
             tweets.append(tweet_tmp)
 
         pp(response, indent=4)

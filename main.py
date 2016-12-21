@@ -1,15 +1,13 @@
 from elasticsearch import Elasticsearch
 import json
 from pprint import pprint as pp
-
+from collections import namedtuple
 
 class Tweet:
-    def __init__(self, id_author, author, text, timestamp):
-        self.id = id_author
-        self.author = author
-        self.text = text
-        self.timestamp = timestamp
-
+    # def __init__(self, id_author, author, text, timestamp):
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
 class ElasticSearchRepository:
     def __init__(self, elastic_search, index, doc_type):
@@ -23,7 +21,7 @@ class ElasticSearchRepository:
         tweets = []
         for tweet in tweets_response['hits']['hits']:
             source = tweet['_source']
-            tweets.append(Tweet(tweet['_id'], source['author'], source['text'], source['timestamp']))
+            tweets.append(Tweet(**source))
         return tweets
 
     def delete_all(self):
@@ -36,20 +34,13 @@ class ElasticSearchRepository:
         list_dict_fields = []
         for i in fields:
             list_dict_fields.append({i: {}})
-        #        dict_fields = {'fields': dict_fields}
         query = {
             "query": {
                 "multi_match": {
                     "query": query_string,
-                    # "type": "cross_fields",
                     "fields": fields,
                     "operator": "and"
                 }
-                # "query_string": {
-                #     #"default_field": ','.join(fields),
-                #     "query": query_string,
-                #     "fields": fields,
-                # }
             },
             "highlight": {
                 "fields": list_dict_fields,
@@ -63,10 +54,9 @@ class ElasticSearchRepository:
         for response_item in response['hits']['hits']:
             source = response_item['_source']
             highlights = response_item['highlight']
-            tweet_tmp = Tweet(response_item['_id'], source['author'], source['text'], source['timestamp'])
-            # setattr(tweet_tmp, str(highlights.keys()[0]), str(highlights.values()[0][0]))
-            [setattr(tweet_tmp, key, str(value[0])) for key, value in highlights.items()]
-            tweets.append(tweet_tmp)
+            tweet = Tweet(**source)
+            [setattr(tweet, key, str(value[0])) for key, value in highlights.items()]
+            tweets.append(tweet)
 
         pp(response, indent=4)
 

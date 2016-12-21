@@ -76,23 +76,15 @@ class TweetElasticSearchRepository(BaseElasticSearchRepository):
         self._doc_type = doc_type
         self._elastic_search = elastic_search
 
-        # def get_all_query(self):
-        #     # source = self._elastic_search.get(index=self._index)
-        #     base.self._elastic_search.search(index=self._index)
-        #     tweets = []
-        #     for tweet in tweets_response['hits']['hits']:
-        #         source = tweet['_source']
-        #         tweets.append(Tweet(tweet['_id'], **source))
-        #     return tweets
-
     def get_found_tweet_objects(self, query_string, fields=['content']):
         search_result_items = BaseElasticSearchRepository.search(self, query_string, fields)
         tweets = []
         for result_item in search_result_items:
             tweet = Tweet()
-            [setattr(tweets, key, value) for key, value in result_item.items()] # ???
+            #setattr(tweets, str(key), value) for key, value in result_item.items()
+            for key, value in result_item.items():
+                setattr(tweet, str(key), value)
             tweets.append(tweet)
-        pp(tweets)
         return tweets
 
 

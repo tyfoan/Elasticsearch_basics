@@ -4,7 +4,7 @@ from pprint import pprint as pp
 
 
 class Tweet:
-    def __init__(self, author_id, author, text, timestamp):
+    def __init__(self, author_id=None, author=None, text=None, timestamp=None):
         self.id = author_id
         self.author = author
         self.text = text
@@ -33,13 +33,14 @@ class BaseElasticSearchRepository(object):
     def get_sources(self, elasticsearch_request):
         pass
 
-    def convert_search_result(self, search_result):
+    def convert_search_with_higlight(self, search_result):
         res = []
         hits = search_result['hits']['hits']
         for hit in hits:
             item = {'id': hit['_id']}
             item.update(hit['_source'])
-            item.update(hit['highlight']) # OVERWRITING?
+            if 'highlight' in hit:
+                [item.update({k: v[0]}) for k, v in hit['highlight'].items()]  # OVERWRITING?
             # fields = hit['_source']
             # if 'highlight' in hit:
             #     item['highlight'] = hit['highlight']
@@ -65,12 +66,12 @@ class BaseElasticSearchRepository(object):
                 "require_field_match": 'false'
             }
         }
-        return self.convert_search_result(self._elastic_search.search(self._index, body=query))
-
+        return self.convert_search_with_higlight(self._elastic_search.search(self._index, body=query))
 
 
 class TweetElasticSearchRepository(BaseElasticSearchRepository):
     def __init__(self, elastic_search, index, doc_type):
+        BaseElasticSearchRepository.__init__(self, elastic_search)
         self._index = index
         self._doc_type = doc_type
         self._elastic_search = elastic_search
@@ -83,14 +84,17 @@ class TweetElasticSearchRepository(BaseElasticSearchRepository):
         #         source = tweet['_source']
         #         tweets.append(Tweet(tweet['_id'], **source))
         #     return tweets
+
     def get_found_tweet_objects(self, query_string, fields=['content']):
         search_result_items = BaseElasticSearchRepository.search(self, query_string, fields)
         tweets = []
-        for item in search_result_items:
-            tweet = Tweet(**item)
+        for result_item in search_result_items:
+            tweet = Tweet()
+            [setattr(tweets, key, value) for key, value in result_item.items()] # ???
             tweets.append(tweet)
         pp(tweets)
         return tweets
+
 
 class FileManager:
     def load_objects_from_json_file(self, path):
@@ -114,6 +118,6 @@ if __name__ == "__main__":
     print('-' * 20)
 
     # json.dumps(dict)
-    all_index_data = tweet_elastic_search_repository.get_all()
-    for item in all_index_data:
-        pp(item.__dict__, indent=4)
+    # all_index_data = tweet_elastic_search_repository.get_all()
+    # for item in all_index_data:
+    #     pp(item.__dict__, indent=4)

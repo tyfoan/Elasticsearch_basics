@@ -1,11 +1,12 @@
 import unittest
-from main import TweetElasticSearchRepository, Tweet
 from mockito import mock, when, any
+from model.tweet import Tweet
+from repositories.tweet_elasticsearch_repository import TweetElasticSearchRepository
 
 __author__ = 'Konstantin Gritsenko <gritsenko.konstantin@gmail.com>'
 
 
-class TestElasticSearchRespository(unittest.TestCase):
+class TestTweetElasticSearchRespository(unittest.TestCase):
     def setUp(self):
         self._highlighted_text = "some highlighted text"
         """Setup all needed objects"""

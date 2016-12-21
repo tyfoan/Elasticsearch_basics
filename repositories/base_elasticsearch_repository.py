@@ -1,9 +1,15 @@
 class BaseElasticSearchRepository(object):
-    def __init__(self, elastic_search):
+    def __init__(self, elastic_search, index, doc_type):
         self._elastic_search = elastic_search
-        self._index = None
-        self._doc_type = None
-        # Fields can be extended
+        self._index = index
+        self._doc_type = doc_type
+
+    def get_model(self):
+        """
+        Instantiate model object to be filled in
+        :rtype: model.base_model.BaseModel
+        """
+        raise Exception("Implement this method")
 
     def get_all_query(self):
         return self._elastic_search.search(index=self._index)
@@ -15,6 +21,7 @@ class BaseElasticSearchRepository(object):
         self._elastic_search.index(index=self._index, doc_type=self._doc_type, body=body, pretty=True)
 
     def delete_by_id(self, id):
+        # TODO: fix errors
         self.es.delete(self.index, self.doc_type, id)
 
     def get_sources(self, elasticsearch_request):
@@ -24,15 +31,8 @@ class BaseElasticSearchRepository(object):
         res = []
         hits = search_result['hits']['hits']
         for hit in hits:
-            item = {'id': hit['_id']}
-            item.update(hit['_source'])
-            if 'highlight' in hit:
-                [item.update({k: v[0]}) for k, v in hit['highlight'].items()]  # OVERWRITING?
-            # fields = hit['_source']
-            # if 'highlight' in hit:
-            #     item['highlight'] = hit['highlight']
-            # for key in fields.keys():
-            #     item[key] = fields[key]
+            item = self.get_model()
+            item.init_from_search_result(hit)
             res.append(item)
         return res
 

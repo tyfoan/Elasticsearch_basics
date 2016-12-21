@@ -10,8 +10,8 @@
     "timestamp": ""
   },
   {
-    "author": "Author Ok.",
-    "text": "Elasticsearch: Ok. bonsai cool.2",
+    "author": "Ok. Author Ok.",
+    "text": "Elasticsearch: bonsai Ok. cool.2",
     "timestamp": ""
   },
   {
@@ -21,7 +21,7 @@
   },
   {
     "author": "kimchy4",
-    "text": "Elasticsearch: cool. bonsai cool4.",
+    "text": "Elasticsearch: cool. bonsai Ok. cool4.",
     "timestamp": ""
   },
   {

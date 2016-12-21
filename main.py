@@ -3,14 +3,14 @@ import json
 from pprint import pprint as pp
 
 
-# 1. write this code from scratch
-# 2. convert sources to object AND write to result object
 class Tweet:
-    def __init__(self, id_author, author, text, timestamp):
-        self.id = id_author
+    def __init__(self, author_id, author, text, timestamp, **kwargs):
+        self.id = author_id
         self.author = author
         self.text = text
         self.timestamp = timestamp
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
 
 class ElasticSearchRepository:
@@ -25,7 +25,7 @@ class ElasticSearchRepository:
         tweets = []
         for tweet in tweets_response['hits']['hits']:
             source = tweet['_source']
-            tweets.append(Tweet(tweet['_id'], source['author'], source['text'], source['timestamp']))
+            tweets.append(Tweet(tweet['_id'], **source))
         return tweets
 
     def delete_all(self):
@@ -35,18 +35,20 @@ class ElasticSearchRepository:
         self._elastic_search.index(index=self._index, doc_type=self._doc_type, body=body, pretty=True)
 
     def search(self, query_string, fields=['content']):
-        dict_fields = {}
+        list_dict_fields = []
         for i in fields:
-            dict_fields[i] = {}
+            list_dict_fields.append({i: {}})
         query = {
             "query": {
-                "query_string": {
-                    "default_field": ','.join(fields),
-                    "query": query_string
+                "multi_match": {
+                    "query": query_string,
+                    "fields": fields,
+                    "operator": "and"
                 }
             },
             "highlight": {
-                "fields": dict_fields
+                "fields": list_dict_fields,
+                "require_field_match": 'false'
             }
         }
 
@@ -56,10 +58,9 @@ class ElasticSearchRepository:
         for response_item in response['hits']['hits']:
             source = response_item['_source']
             highlights = response_item['highlight']
-            tweet_tmp = Tweet(response_item['_id'], source['author'], source['text'], source['timestamp'])
-            setattr(tweet_tmp, str(highlights.keys()[0]), str(highlights.values()[0][0]))
-            tweets.append(tweet_tmp)
-
+            tweet = Tweet(response_item['_id'], **source)
+            [setattr(tweet, key, str(value[0])) for key, value in highlights.items()]
+            tweets.append(tweet)
 
         pp(response, indent=4)
 
@@ -81,11 +82,11 @@ if __name__ == "__main__":
     json_files = file_manager.load_objects_from_json_file("./indexes.json")
     [elastic_search_repository.create(json) for json in json_files]
 
-    tweets_found = elastic_search_repository.search('Ok.', ['author'])
+    tweets_found = elastic_search_repository.search('Ok.', ['author', 'text'])
     for tweet in tweets_found:
         pp(tweet.__dict__, indent=4)
 
-    print('-'*20)
+    print('-' * 20)
 
     # json.dumps(dict)
     all_index_data = elastic_search_repository.get_all()

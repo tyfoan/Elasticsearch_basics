@@ -1,11 +1,13 @@
 import unittest
-from main import ElasticSearchRepository, Tweet
+from factories.tweet_model_factory import TweetModelFactory
 from mockito import mock, when, any
+from model.tweet import Tweet
+from repositories.base_elasticsearch_repository import BaseElasticSearchRepository
 
 __author__ = 'Konstantin Gritsenko <gritsenko.konstantin@gmail.com>'
 
 
-class TestElasticSearchRespository(unittest.TestCase):
+class TestTweetElasticSearchRespository(unittest.TestCase):
     def setUp(self):
         self._highlighted_text = "some highlighted text"
         """Setup all needed objects"""
@@ -13,7 +15,12 @@ class TestElasticSearchRespository(unittest.TestCase):
         when(self._elastic_search)\
             .search(any(), body=any())\
             .thenReturn(self._prepare_search_reponse())
-        self._repository = ElasticSearchRepository(self._elastic_search, "some_test_index", "some_test_doc_type")
+        self._repository = BaseElasticSearchRepository(
+            self._elastic_search,
+            "some_test_index",
+            "some_test_doc_type",
+            TweetModelFactory()
+        )
         pass
 
     def test_search_with_highlight(self):

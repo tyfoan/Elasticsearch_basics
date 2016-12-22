@@ -12,18 +12,21 @@ class TestTweetElasticSearchRespository(unittest.TestCase):
         self._highlighted_text = "some highlighted text"
         """Setup all needed objects"""
         self._elastic_search = mock()
-        when(self._elastic_search)\
-            .search(any(), body=any())\
-            .thenReturn(self._prepare_search_reponse())
-        self._repository = BaseElasticSearchRepository(
-            self._elastic_search,
-            "some_test_index",
-            "some_test_doc_type",
-            TweetModelFactory()
-        )
         pass
 
     def test_search_with_highlight(self):
+        when(self._elastic_search).search(any(), body=any()).thenReturn(self._prepare_search_reponse(True))
+        self._repository = BaseElasticSearchRepository(self._elastic_search, "some_test_index", "some_test_doc_type", TweetModelFactory())
+
+        result = self._repository.search("some query string")
+        expected_results = self._prepare_expected_data()
+        for item, expected_item in zip(result, expected_results):
+            self.assertEquals(expected_item.__dict__, item.__dict__)
+
+    def test_search_without_highlight(self):
+        when(self._elastic_search).search(any(), body=any()).thenReturn(self._prepare_search_reponse())
+        self._repository = BaseElasticSearchRepository(self._elastic_search, "some_test_index", "some_test_doc_type", TweetModelFactory())
+
         result = self._repository.search("some query string")
         expected_results = self._prepare_expected_data()
         for item, expected_item in zip(result, expected_results):
@@ -47,8 +50,8 @@ class TestTweetElasticSearchRespository(unittest.TestCase):
             Tweet("5", self._highlighted_text, self._highlighted_text, "plmnko 5"),
         ]
 
-    def _prepare_search_reponse(self):
-        return {
+    def _prepare_search_reponse(self, with_highlight=False):
+        search_response = {
             "hits": {
                 "hits": [
                     {
@@ -57,12 +60,15 @@ class TestTweetElasticSearchRespository(unittest.TestCase):
                             'author': item.author,
                             'text': item.text,
                             'timestamp': item.timestamp
-                        },
-                        'highlight': {
-                            'author': [self._highlighted_text],
-                            'text': [self._highlighted_text]
                         }
                     } for item in self._prepare_data()
                 ]
             }
         }
+        if with_highlight:
+            for item in search_response['hits']['hits']:
+                item['highlight'] = {
+                    'author': [self._highlighted_text],
+                    'text': [self._highlighted_text]
+                }
+        return search_response

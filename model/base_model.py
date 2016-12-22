@@ -15,7 +15,7 @@ class BaseModel:
         """
         self.id = search_result_item['_id']
         source = search_result_item['_source']
-        highlight = search_result_item['highlight'] if 'highlight' in search_result_item else None
+        highlight = search_result_item.get('highlight')
         for key in source.keys():
             if hasattr(self, key):
                 source_value = source[key]

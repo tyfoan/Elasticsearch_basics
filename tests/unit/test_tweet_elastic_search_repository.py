@@ -28,7 +28,7 @@ class TestTweetElasticSearchRespository(unittest.TestCase):
         self._repository = BaseElasticSearchRepository(self._elastic_search, "some_test_index", "some_test_doc_type", TweetModelFactory())
 
         result = self._repository.search("some query string")
-        expected_results = self._prepare_expected_data()
+        expected_results = self._prepare_data()
         for item, expected_item in zip(result, expected_results):
             self.assertEquals(expected_item.__dict__, item.__dict__)
 
